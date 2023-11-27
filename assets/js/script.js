@@ -22,6 +22,7 @@ const KEYS = {
     arrowLeft: {isPressed: false},
     arrowRight: {isPressed: false},
     k: {isPressed: false},
+    l: {isPressed: false},
 
     w: {isPressed: false},
     s: {isPressed: false},
@@ -32,8 +33,9 @@ const KEYS = {
 // MATTIAS WINTERMAP
 const beachMap = new Map('./assets/images/sand-map.png', 150, 0, 0, 120, CANVAS_WIDTH, CANVAS_HEIGHT, 90, 180, 620, 180);
 const winterMap = new Map('./assets/images/snow-map.png', 120, 0, 230, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 100, 200, 200, 300);
+const orientalMap = new Map('./assets/images/oriental-map.png', 120, 0, 230, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 100, 200, 200, 300);
 
-const currentMap = beachMap;
+const currentMap = orientalMap;
 
 // create player 1
 // let player1x = 50;
@@ -88,6 +90,13 @@ function handleInput(keys, map) {
         player1.framesPerSecond = 100;
         player1.move(0, 0, true);
         player1.frameY = 4
+        
+    }
+    if (keys.l.isPressed && player1.y > borders.top) {
+        player1.framesPerSecond = 1000;
+        player1.move(0, 0, true);
+        player1.frameY = 5
+        player1.maxFrames = 11
         
     }
     // player 2
@@ -170,6 +179,9 @@ window.addEventListener('keydown', (event) => {
     } else if (event.key === "k") {
         // player1.move(1, 0);
         KEYS.k.isPressed = true;
+    } else if (event.key === "l") {
+        // player1.move(1, 0);
+        KEYS.l.isPressed = true;
     }
 
     // Player 2
@@ -214,8 +226,13 @@ window.addEventListener('keyup', (event) => {
         // player1.move(1, 0);
         KEYS.k.isPressed = false;
         player1.move(0, 0, false)
-        player1.frameY = 0;
-        
+        player1.frameY = 0;    
+    } else if (event.key === "l") {
+        // player1.move(1, 0);
+        KEYS.l.isPressed = false;
+        player1.move(0, 0, false)
+        player1.frameY = 0; 
+        player1.maxFrames = 3  
     }
 
     // Player 2
