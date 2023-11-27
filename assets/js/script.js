@@ -21,6 +21,7 @@ const KEYS = {
     arrowDown: {isPressed: false},
     arrowLeft: {isPressed: false},
     arrowRight: {isPressed: false},
+    k: {isPressed: false},
 
     w: {isPressed: false},
     s: {isPressed: false},
@@ -82,6 +83,12 @@ function handleInput(keys, map) {
     if (keys.arrowRight.isPressed && (player1.x + player1.width) < CANVAS_WIDTH - borders.right) {
         player1.move(5, 0, true);
         player1.frameY = 2
+    }
+    if (keys.k.isPressed && player1.y > borders.top) {
+        player1.framesPerSecond = 100;
+        player1.move(0, 0, true);
+        player1.frameY = 4
+        
     }
     // player 2
     if (keys.w.isPressed && player2.y > borders.top) {
@@ -160,6 +167,9 @@ window.addEventListener('keydown', (event) => {
     } else if (event.key === "ArrowRight") {
         // player1.move(1, 0);
         KEYS.arrowRight.isPressed = true;
+    } else if (event.key === "k") {
+        // player1.move(1, 0);
+        KEYS.k.isPressed = true;
     }
 
     // Player 2
@@ -200,6 +210,12 @@ window.addEventListener('keyup', (event) => {
         // player1.move(1, 0);
         KEYS.arrowRight.isPressed = false;
         player1.move(0, 0, false)
+    } else if (event.key === "k") {
+        // player1.move(1, 0);
+        KEYS.k.isPressed = false;
+        player1.move(0, 0, false)
+        player1.frameY = 0;
+        
     }
 
     // Player 2
