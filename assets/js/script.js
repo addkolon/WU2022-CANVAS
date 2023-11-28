@@ -35,7 +35,7 @@ const beachMap = new Map('./assets/images/sand-map.png', 150, 0, 0, 120, CANVAS_
 const winterMap = new Map('./assets/images/snow-map.png', 120, 0, 230, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 100, 200, 200, 300);
 const orientalMap = new Map('./assets/images/oriental-map.png', 120, 0, 230, 0, CANVAS_WIDTH, CANVAS_HEIGHT, 100, 200, 200, 300);
 
-const currentMap = orientalMap;
+const currentMap = winterMap;
 
 // create player 1
 // let player1x = 50;
@@ -70,51 +70,39 @@ function handleInput(keys, map) {
     // MATTIAS 2. ADD different frameY values 
     // player 1
     if (keys.arrowUp.isPressed && player1.y > borders.top) {
-        player1.move(0, -5, true);
-        player1.frameY = 3
+        player1.move(0, -5, true, 3);
     }
     if (keys.arrowDown.isPressed && (player1.y + player1.height) < CANVAS_HEIGHT - borders.bottom) {
-        player1.move(0, 5, true);
-        player1.frameY = 0
+        player1.move(0, 5, true, 0);
         
     }
     if (keys.arrowLeft.isPressed && player1.x > borders.left) {
-        player1.move(-5, 0, true);
-        player1.frameY = 1
+        player1.move(-5, 0, true, 1);
     }
     if (keys.arrowRight.isPressed && (player1.x + player1.width) < CANVAS_WIDTH - borders.right) {
-        player1.move(5, 0, true);
-        player1.frameY = 2
+        player1.move(5, 0, true, 2);
     }
     if (keys.k.isPressed && player1.y > borders.top) {
-        player1.framesPerSecond = 100;
-        player1.move(0, 0, true);
-        player1.frameY = 4
+        player1.move(0, 0, true, 4);
         
     }
     if (keys.l.isPressed && player1.y > borders.top) {
-        player1.framesPerSecond = 1000;
-        player1.move(0, 0, true);
-        player1.frameY = 5
+        player1.move(0, 0, true, 5);
         player1.maxFrames = 11
         
     }
     // player 2
     if (keys.w.isPressed && player2.y > borders.top) {
-        player2.move(0, -5, true);
-        player2.frameY = 3
+        player2.move(0, -5, true, 3);
     }
     if (keys.s.isPressed && (player2.y + player2.height) < CANVAS_HEIGHT - borders.bottom) {
-        player2.move(0, 5, true);
-        player2.frameY = 0
+        player2.move(0, 5, true, 0);
     }
     if (keys.a.isPressed && player2.x > borders.left) {
-        player2.move(-5, 0, true);
-        player2.frameY = 1
+        player2.move(-5, 0, true, 1);
     }
     if (keys.d.isPressed && (player2.x + player2.width) < CANVAS_WIDTH - borders.right) {
-        player2.move(5, 0, true);
-        player2.frameY = 2
+        player2.move(5, 0, true, 2);
 
     }
 }
