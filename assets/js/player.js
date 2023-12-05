@@ -73,12 +73,13 @@ class Player {
     }
   }
 
-  move(x, y, state=true, frameY=0) {
+  move(x, y, direction = 0, state=true) {
     // DONE: finish the method to be able move position
     this.x += x;
     this.y += y;
+    this.frameY = direction;
     // MATTIAS: Add state on move
     this.animation = state;
-    this.frameY = frameY;
+    
   }
 }

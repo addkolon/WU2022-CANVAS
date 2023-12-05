@@ -11,10 +11,15 @@ const CANVAS_HEIGHT = canvasEl.getBoundingClientRect().height;
 // mapHeight = CANVAS_HEIGHT;
 
 const KEYS = {
+  // Player 1
   arrowUp: { isPressed: false },
   arrowDown: { isPressed: false },
   arrowLeft: { isPressed: false },
   arrowRight: { isPressed: false },
+  k: { isPressed: false },
+  l: { isPressed: false },
+
+  // Player 2
   w: { isPressed: false },
   s: { isPressed: false },
   a: { isPressed: false },
@@ -22,17 +27,74 @@ const KEYS = {
 };
 
 // CREATE MAPS
-const sandMap = new Map("./assets/images/sand-map.png", CANVAS_WIDTH, CANVAS_HEIGHT, 125, 0, 0, 110);
-const winterMap = new Map("./assets/images/snow-map.png", CANVAS_WIDTH, CANVAS_HEIGHT, 125, 0, 230, 0);
-const orientalMap = new Map("./assets/images/oriental-map.png", CANVAS_WIDTH, CANVAS_HEIGHT, 0, 0, 490, 0);
+const sandMap = new Map({
+  imageSrc: "./assets/images/sand-map.png", 
+  borders: {
+    top: 150,
+    left: 0,
+    right: 0,
+    bottom: 120,
+  },
+  width: CANVAS_WIDTH, 
+  height: CANVAS_HEIGHT, 
+  player1StartingCordinates: {
+    x: 140,
+    y: 180,
+  },
+  player2StartingCordinates: {
+    x: 620,
+    y: 180,
+  },
+});
 
-let currentMap = orientalMap;
+const winterMap = new Map({
+  imageSrc: "./assets/images/snow-map.png", 
+  borders: {
+    top: 125, 
+    left: 0, 
+    right: 230, 
+    bottom: 0
+  },
+  width: CANVAS_WIDTH, 
+  height: CANVAS_HEIGHT, 
+  player1StartingCordinates: {
+    x: 90,
+    y: 180,
+  },
+  player2StartingCordinates: {
+    x: 300,
+    y: 400,
+  },
+});
+
+const orientalMap = new Map({
+  imageSrc: "./assets/images/oriental-map.png", 
+  borders: {
+    top: 0, 
+    left: 0, 
+    right: 490, 
+    bottom: 0
+  },
+  width: CANVAS_WIDTH, 
+  height: CANVAS_HEIGHT, 
+  player1StartingCordinates: {
+    x: 90,
+    y: 180,
+  },
+  player2StartingCordinates: {
+    x: 90,
+    y: 180,
+  },
+});
+
+
+let currentMap = sandMap;
 
 // create player 1
-const player1 = new Player(50, 100, "transparent", "./assets/images/punk_guy_green.png"); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
+const player1 = new Player(currentMap.player1StartingCordinates.x, currentMap.player1StartingCordinates.y, "transparent", "./assets/images/punk_guy_green.png"); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
 
 // create player 2
-const player2 = new Player(150, 100, "transparent", "./assets/images/punk_guy_red.png"); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
+const player2 = new Player(currentMap.player2StartingCordinates.x, currentMap.player2StartingCordinates.y, "transparent", "./assets/images/punk_guy_red.png"); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
 function handleInput(keys, map) {
   // DONE: make a barriers such that the players cannot move
   // out of the canvas bounds
@@ -44,18 +106,32 @@ function handleInput(keys, map) {
 
   const borders = map.borders; 
   // player 1
+
+  // ArrowUp
   if (keys.arrowUp.isPressed && player1.y > borders.top) {
     player1.move(0, -5, 3);
   }
+  // ArrowDown
   if (keys.arrowDown.isPressed && player1.y + player1.height < CANVAS_HEIGHT - borders.bottom) {
     player1.move(0, 5, 0);
   }
+  // ArrowLeft
   if (keys.arrowLeft.isPressed && player1.x > borders.left) {
     player1.move(-5, 0, 1);
   }
+  // ArrowRight
   if (keys.arrowRight.isPressed && player1.x + player1.width < CANVAS_WIDTH - borders.right) {
     player1.move(5, 0, 2);
   }
+  // K
+  if (keys.k.isPressed) {
+    player1.move(0, 0, 4);
+  }
+  // L
+  if (keys.l.isPressed) {
+    player1.move(0, 0, 5, true, 11);
+  }
+
   // player 2
   if (keys.w.isPressed && player2.y > borders.top) {
     player2.move(0, -5, 3);
@@ -83,7 +159,7 @@ function gameLoop(timeStamp) {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 //   DRAW BACKGROUND
-currentMap.draw(ctx);
+  currentMap.draw(ctx);
 
   // Do movements based on which key is pressed
   handleInput(KEYS, currentMap);
@@ -102,26 +178,22 @@ window.addEventListener("keydown", (event) => {
   console.log("KeyDown event trigged. key", event.key, "has been pressed");
   // Player 1
   if (event.key === "ArrowUp") {
-    // player1y += -1;
-    // player1.move(0, -1);
     KEYS.arrowUp.isPressed = true;
   } else if (event.key === "ArrowDown") {
-    // player1.move(0, 1);
     KEYS.arrowDown.isPressed = true;
   } else if (event.key === "ArrowLeft") {
-    // player1.move(-1, 0);
     KEYS.arrowLeft.isPressed = true;
   } else if (event.key === "ArrowRight") {
-    // player1.move(1, 0);
     KEYS.arrowRight.isPressed = true;
+  } else if (event.key === "k") {
+    KEYS.k.isPressed = true;
+  } else if (event.key === "l") {
+  KEYS.l.isPressed = true;
   }
   // Player 2
   if (event.key === "w") {
-    // player2y += -1;
-    // player2.move(0, -1);
     KEYS.w.isPressed = true;
   } else if (event.key === "s") {
-    // player2.move(0, 1);
     KEYS.s.isPressed = true;
   } else if (event.key === "a") {
     // player2.move(-1, 0);
@@ -146,6 +218,12 @@ window.addEventListener("keyup", (event) => {
   } else if (event.key === "ArrowRight") {
     player1.move(0, 0, 2, false);
     KEYS.arrowRight.isPressed = false;
+  } else if (event.key === "k") {
+    player1.move(0, 0, 0, false);
+    KEYS.k.isPressed = false;
+  } else if (event.key === "l") {
+    player1.move(0, 0, 0, false, 3);
+    KEYS.l.isPressed = false;
   }
   // Player 2
   if (event.key === "w") {

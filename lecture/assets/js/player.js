@@ -29,6 +29,7 @@ class Player {
     ctx.fillRect(this.x, this.y, this.width, this.height);
 
     if (this.animation) {
+      // console.log(this.frameTimer)
       if (this.frameTimer > this.frameInterval) {
         if (this.frameX < this.maxFrames) {
           this.frameX++;
@@ -43,6 +44,7 @@ class Player {
       this.frameX = 0;
     }
 
+
     ctx.drawImage(
       this.spriteImage, // Image src
       this.frameX * this.frameWidth, // Left
@@ -56,11 +58,12 @@ class Player {
     );
   }
 
-  move(x, y, direction = 0, state = true) {
+  move(x, y, direction = 0, state = true, frames = 3) {
     // DONE: finish the method to be able move position
     this.x += x;
     this.y += y;
     this.frameY = direction;
     this.animation = state;
+    this.maxFrames = frames
   }
 }

@@ -1,17 +1,33 @@
 class Map {
-    constructor(backgroundImage, top, left, right, bottom, width, height, p1x, p1y, p2x, p2y) {
+    constructor({
+        backgroundImage,
+        borders,
+        width,
+        height,
+        player1StartingPosition,
+        player2StartingPosition,
+        nextMap,
+        nextMapCollisionBox 
+    }) {
         this.backgroundImage = new Image();
         this.backgroundImage.src = backgroundImage;
         this.width = width;
         this.height = height;
         this.borders = {
-            top: top,
-            left: left,
-            right: right,
-            bottom: bottom,
+            top: borders.top,
+            left: borders.left,
+            right: borders.right,
+            bottom: borders.bottom,
         };
-        this.player1StartingPosition = { x: p1x, y: p1y };
-        this.player2StartingPosition = { x: p2x, y: p2y };
+        this.player1StartingPosition = player1StartingPosition;
+        this.player2StartingPosition = player2StartingPosition;
+        this.nextMap = nextMap;
+        this.nextMapCollisionBox = {
+            x: nextMapCollisionBox.x,
+            y: nextMapCollisionBox.y,
+            width: nextMapCollisionBox.width,
+            height: nextMapCollisionBox.height
+        }
     }
 
     draw(ctx) {

@@ -1,15 +1,17 @@
 class Map {
-  constructor(imageSrc, width, height, top = 0, left = 0, right = 0, bottom = 0) {
+  constructor({imageSrc, width, height, borders, player1StartingCordinates, player2StartingCordinates}) {
     this.image = new Image();
     this.image.src = imageSrc;
-    this.width = width
-    this.height = height
     this.borders = {
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
-    }
+      top: borders.top,
+      left: borders.left,
+      right: borders.right,
+      bottom: borders.bottom,
+    };
+    this.width = width;
+    this.height = height;
+    this.player1StartingCordinates = player1StartingCordinates;
+    this.player2StartingCordinates = player2StartingCordinates;
   }
 
   draw(ctx) {
