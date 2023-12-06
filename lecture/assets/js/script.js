@@ -4,6 +4,28 @@ const ctx = canvasEl.getContext("2d");
 const CANVAS_WIDTH = canvasEl.getBoundingClientRect().width;
 const CANVAS_HEIGHT = canvasEl.getBoundingClientRect().height;
 
+const zoomLevel = 4;
+
+// TILE SIZES
+const tileWidth = 16 * zoomLevel; // TILE: 64
+const tileHeight = 16 * zoomLevel; // TILE: 64 
+
+function checkMapChangeCollision(
+  player,
+  mapChangeX,
+  mapChangeY,
+  mapChangeWidth,
+  mapChangeHeight,
+  map
+) {
+  return (
+    player.x >= mapChangeX &&
+    player.x + player.width <= mapChangeX + mapChangeWidth &&
+    player.y >= mapChangeY &&
+    player.y + player.height <= mapChangeY + mapChangeHeight
+  );
+}
+
 // BG MAP
 // mapBg = new Image();
 // mapBg.src = "./assets/images/sand-map.png";
@@ -28,15 +50,15 @@ const KEYS = {
 
 // CREATE MAPS
 const sandMap = new Map({
-  imageSrc: "./assets/images/sand-map.png", 
+  imageSrc: "./assets/images/sand-map.png",
   borders: {
     top: 150,
     left: 0,
     right: 0,
-    bottom: 120,
+    bottom: 0,
   },
-  width: CANVAS_WIDTH, 
-  height: CANVAS_HEIGHT, 
+  width: CANVAS_WIDTH,
+  height: CANVAS_HEIGHT,
   player1StartingCordinates: {
     x: 140,
     y: 180,
@@ -45,56 +67,117 @@ const sandMap = new Map({
     x: 620,
     y: 180,
   },
+  nextMapCollisionBox: {
+    x: 10.5,
+    y: 2,
+    width: 2,
+    height: 2,
+  },
+  nextMap: null
 });
 
 const winterMap = new Map({
-  imageSrc: "./assets/images/snow-map.png", 
+  imageSrc: "./assets/images/snow-map.png",
   borders: {
-    top: 125, 
-    left: 0, 
-    right: 230, 
-    bottom: 0
+    top: 125,
+    left: 0,
+    right: 230,
+    bottom: 0,
   },
-  width: CANVAS_WIDTH, 
-  height: CANVAS_HEIGHT, 
+  width: CANVAS_WIDTH,
+  height: CANVAS_HEIGHT,
   player1StartingCordinates: {
-    x: 90,
-    y: 180,
+    x: tileWidth * 5,
+    y: tileHeight * 5,
   },
   player2StartingCordinates: {
-    x: 300,
-    y: 400,
+    x: tileWidth * 2,
+    y: tileHeight * 4,
   },
+  nextMapCollisionBox: {
+    x: 6.5,
+    y: 2,
+    width: 2,
+    height: 2,
+  },
+  nextMap: null
 });
 
 const orientalMap = new Map({
-  imageSrc: "./assets/images/oriental-map.png", 
+  imageSrc: "./assets/images/oriental-map.png",
   borders: {
-    top: 0, 
-    left: 0, 
-    right: 490, 
-    bottom: 0
+    top: 0,
+    left: 0,
+    right: 490,
+    bottom: 0,
   },
-  width: CANVAS_WIDTH, 
-  height: CANVAS_HEIGHT, 
+  width: CANVAS_WIDTH,
+  height: CANVAS_HEIGHT,
+  player1StartingCordinates: {
+    x: tileWidth * 4,
+    y: tileHeight * 4,
+  },
+  player2StartingCordinates: {
+    x: tileWidth * 2,
+    y: tileHeight * 6,
+  },
+  nextMapCollisionBox: {
+    x: 0,
+    y: 0,
+    width: 3,
+    height: 2,
+  },
+  nextMap: null
+});
+
+const demoMap = new Map({
+  imageSrc: "./assets/images/map-background.png",
+  borders: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  width: CANVAS_WIDTH,
+  height: CANVAS_HEIGHT,
   player1StartingCordinates: {
     x: 90,
     y: 180,
   },
   player2StartingCordinates: {
-    x: 90,
-    y: 180,
+    x: 200,
+    y: 600,
+  },
+  nextMapCollisionBox: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
   },
 });
 
+orientalMap.nextMap = winterMap
+winterMap.nextMap = sandMap
+sandMap.nextMap = orientalMap
 
-let currentMap = sandMap;
+// WHICH MAP SHOULD BE DISPLAYED
+let currentMap = orientalMap;
 
 // create player 1
-const player1 = new Player(currentMap.player1StartingCordinates.x, currentMap.player1StartingCordinates.y, "transparent", "./assets/images/punk_guy_green.png"); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
+const player1 = new Player(
+  currentMap.player1StartingCordinates.x,
+  currentMap.player1StartingCordinates.y,
+  "transparent",
+  "./assets/images/punk_guy_green.png"
+); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
 
 // create player 2
-const player2 = new Player(currentMap.player2StartingCordinates.x, currentMap.player2StartingCordinates.y, "transparent", "./assets/images/punk_guy_red.png"); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
+const player2 = new Player(
+  currentMap.player2StartingCordinates.x,
+  currentMap.player2StartingCordinates.y,
+  "transparent",
+  "./assets/images/punk_guy_red.png"
+); // Objekt skapas med x,y,width,height som kan ritas ut, som kan flytta sin position
 function handleInput(keys, map) {
   // DONE: make a barriers such that the players cannot move
   // out of the canvas bounds
@@ -104,7 +187,7 @@ function handleInput(keys, map) {
   // DONE 4: Stop the player 1 from moving right outside the canvas
   // DONE 5: Stop the player 2 as well from all directions
 
-  const borders = map.borders; 
+  const borders = map.borders;
   // player 1
 
   // ArrowUp
@@ -112,7 +195,10 @@ function handleInput(keys, map) {
     player1.move(0, -5, 3);
   }
   // ArrowDown
-  if (keys.arrowDown.isPressed && player1.y + player1.height < CANVAS_HEIGHT - borders.bottom) {
+  if (
+    keys.arrowDown.isPressed &&
+    player1.y + player1.height < CANVAS_HEIGHT - borders.bottom
+  ) {
     player1.move(0, 5, 0);
   }
   // ArrowLeft
@@ -120,7 +206,10 @@ function handleInput(keys, map) {
     player1.move(-5, 0, 1);
   }
   // ArrowRight
-  if (keys.arrowRight.isPressed && player1.x + player1.width < CANVAS_WIDTH - borders.right) {
+  if (
+    keys.arrowRight.isPressed &&
+    player1.x + player1.width < CANVAS_WIDTH - borders.right
+  ) {
     player1.move(5, 0, 2);
   }
   // K
@@ -136,21 +225,29 @@ function handleInput(keys, map) {
   if (keys.w.isPressed && player2.y > borders.top) {
     player2.move(0, -5, 3);
   }
-  if (keys.s.isPressed && player2.y + player2.height < CANVAS_HEIGHT - borders.bottom) {
+  if (
+    keys.s.isPressed &&
+    player2.y + player2.height < CANVAS_HEIGHT - borders.bottom
+  ) {
     player2.move(0, 5, 0);
   }
   if (keys.a.isPressed && player2.x > borders.left) {
     player2.move(-5, 0, 1);
   }
-  if (keys.d.isPressed && player2.x + player2.width < CANVAS_WIDTH - borders.right) {
+  if (
+    keys.d.isPressed &&
+    player2.x + player2.width < CANVAS_WIDTH - borders.right
+  ) {
     player2.move(5, 0, 2);
   }
 }
 
-let lastTime = 0
+demoMapImage = new Image();
+demoMapImage.src = "./assets/images/map-foreground.png";
+
+let lastTime = 0;
 
 function gameLoop(timeStamp) {
-
   const deltaTime = timeStamp - lastTime;
   lastTime = timeStamp;
 
@@ -158,11 +255,59 @@ function gameLoop(timeStamp) {
   // Clear Canvas
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-//   DRAW BACKGROUND
+  //   DRAW BACKGROUND
   currentMap.draw(ctx);
 
   // Do movements based on which key is pressed
   handleInput(KEYS, currentMap);
+
+  // nextMapCollisionBox: {
+  //   x: 1,
+  //   y: 0,
+  //   width: 2,
+  //   height: 2
+  // }
+
+  let mapChangeX = currentMap.nextMapCollisionBox.x * tileWidth;
+  let mapChangeY = currentMap.nextMapCollisionBox.y * tileHeight;
+  let mapChangeWidth = currentMap.nextMapCollisionBox.width * tileWidth;
+  let mapChangeHeight = currentMap.nextMapCollisionBox.height * tileHeight;
+
+  if (
+    checkMapChangeCollision(
+      player1,
+      mapChangeX,
+      mapChangeY,
+      mapChangeWidth,
+      mapChangeHeight,
+      currentMap
+    )
+  ) {
+    currentMap = currentMap.nextMap
+    player1.x = currentMap.player1StartingCordinates.x;
+    player1.y = currentMap.player1StartingCordinates.y;
+    player2.x = currentMap.player2StartingCordinates.x;
+    player2.y = currentMap.player2StartingCordinates.y;
+  }
+  if (
+    checkMapChangeCollision(
+      player2,
+      mapChangeX,
+      mapChangeY,
+      mapChangeWidth,
+      mapChangeHeight,
+      currentMap
+    )
+  ) {
+    currentMap = currentMap.nextMap
+    player1.x = currentMap.player1StartingCordinates.x;
+    player1.y = currentMap.player1StartingCordinates.y;
+    player2.x = currentMap.player2StartingCordinates.x;
+    player2.y = currentMap.player2StartingCordinates.y;
+  }
+  ctx.fillStyle = "rgba(0,255,0,0.5)";
+  ctx.fillRect(mapChangeX, mapChangeY, mapChangeWidth, mapChangeHeight);
+
   // Draw Player 1
   // ctx.fillStyle = "blue";
   // ctx.fillRect(player1x, player1y, 25, 25);
@@ -171,6 +316,8 @@ function gameLoop(timeStamp) {
   // ctx.fillStyle = "red";
   // ctx.fillRect(player2x, player2y, 25, 25);
   player2.draw(ctx, deltaTime);
+
+  // ctx.drawImage(demoMapImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   // Do gameLoop again
   requestAnimationFrame(gameLoop);
 }
@@ -188,7 +335,7 @@ window.addEventListener("keydown", (event) => {
   } else if (event.key === "k") {
     KEYS.k.isPressed = true;
   } else if (event.key === "l") {
-  KEYS.l.isPressed = true;
+    KEYS.l.isPressed = true;
   }
   // Player 2
   if (event.key === "w") {
